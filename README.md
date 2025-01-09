@@ -1,2 +1,5 @@
-# pydantic-ai-getting-started
-A repository with code samples for how to get started with Pydantic AI Agent Framework
+# Getting Started with Pydantic AI
+
+This is a repository with code samples for how to get started with Pydantic AI Agent Framework
+
+
