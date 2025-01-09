@@ -20,8 +20,41 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-pydantic
-pydantic-ai
-pydantic-ai-graph == 0.0.1
-colorama == 0.4.6
-openai
+from openai import AsyncAzureOpenAI
+from pydantic import BaseModel
+from pydantic_ai import Agent, RunContext
+from colorama import Fore, Back
+from pydantic_ai.models.openai import OpenAIModel
+
+from services import OfferService, TravelOffer
+
+
+class OfferSearchResults(BaseModel):
+    travel_offers: list[TravelOffer]
+
+# Set up the Client
+client = AsyncAzureOpenAI()
+
+# Set up a model
+model = OpenAIModel('gpt-4o', openai_client=client)
+
+# Create an instance of a PydanticAI Agent
+agent = Agent(
+            model,
+            # result_type=OfferSearchResults
+        )
+
+@agent.tool_plain
+def get_available_travel_offers() -> list[TravelOffer]:
+    """Returns a list of travel offers available"""
+    service: OfferService = OfferService()
+    return service.get_available_offers()
+
+
+user_prompt:str = 'What are the available travel offers available today?'
+
+result = agent.run_sync(user_prompt=user_prompt)
+
+print(Fore.CYAN, result.data)
+
+print(Back.BLUE, result.usage())
